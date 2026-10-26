@@ -128,10 +128,11 @@
   // 현재 표시 중인 달의 일정 불러오기
   async function loadEvents() {
     if (!accessToken) {
-      events = [];
-      renderLists();
-      window.dispatchEvent(new CustomEvent("gcal-data"));
-      return;
+        events = [];
+        loadError = "";
+        renderLists();
+        window.dispatchEvent(new CustomEvent("gcal-data"));
+        return;
     }
 
     // 동시에 같은 요청이 중복 실행되는 것 방지
