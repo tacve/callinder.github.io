@@ -169,7 +169,7 @@ button {
 .event-list-group li.type-holiday { background: #d93a40; color: #fff; }
 .event-list-group li.type-annual  { background: #238a4c; color: #fff; }
 .event-list-group li.type-sick    { background: #7b3fb8; color: #fff; }
-.event-list-group li.type-normal  { background: #2f6fed; color: #fff; }
+.event-list-group li.type-normal  { background: #4a71c0; color: #fff; }
 
 /* 달력 */
 .grid {
