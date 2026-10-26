@@ -159,7 +159,8 @@
         orderBy: "startTime",
         timeMin: startDate.toISOString(),
         timeMax: endDate.toISOString(),
-        maxResults: "2500"
+        maxResults: "2500",
+        fields: "items(id,summary,start,end)"
       });
 
       const url = `${API_BASE}?${params}`;
