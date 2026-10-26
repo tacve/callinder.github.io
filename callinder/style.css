@@ -132,3 +132,18 @@ body {
 .holiday-box ul {
   padding-left: 18px;
 }
+[data-date] { cursor: pointer; }
+.gcal-event { cursor: pointer; }
+#gcal-dialog {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+}
+#gcal-dialog input,
+#gcal-dialog select {
+  display: block;
+  margin: 8px 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+.dlg-buttons { display: flex; gap: 8px; margin-top: 8px; }

@@ -30,24 +30,19 @@
     </div>
 
     <!-- 아래부터 새로 추가한 부분 -->
-    <div class="gcal-add">
-        <input type="date" id="gcal-date">
-        <input type="text" id="gcal-title" placeholder="일정 제목">
-        <select id="gcal-type">
+    <dialog id="gcal-dialog">
+        <h3 id="dlg-date"></h3>
+        <input type="text" id="dlg-title" placeholder="일정 제목">
+        <select id="dlg-type">
             <option value="normal">일반 일정</option>
             <option value="holiday">휴일</option>
         </select>
-        <button id="gcal-add-btn">추가</button>
-    </div>
-
-    <div class="holiday-box">
-        <h3>사용한 휴일 <span id="holiday-count"></span></h3>
-        <ul id="holiday-list"></ul>
-    </div>
-
-    <div class="gcal-footer">
-        <button id="gcal-login">구글 로그인</button>
-    </div>
+        <label>일수 <input type="number" id="dlg-days" value="1" min="1" max="31"></label>
+        <div class="dlg-buttons">
+            <button type="button" id="dlg-save">저장</button>
+            <button type="button" id="dlg-cancel">취소</button>
+        </div>
+    </dialog>
 </div>
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>

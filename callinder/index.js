@@ -29,7 +29,10 @@ const loadGcal = async (d) => {
   const items = await gcal.listEvents(start, end);
   const map = {};
   items.forEach((e) => {
-    (map[e.date] ||= []).push({ title: e.title, type: e.type });
+    for (let n = 0; n < e.days; n++) {
+      const k = gcal.addDays(e.date, n);
+      (map[k] ||= []).push({ id: e.id, title: e.title, type: e.type, n, days: e.days });
+    }
   });
   gcalCache[monthKey(d)] = map;
 
@@ -88,7 +91,7 @@ const renderCal = (date) => {
     const items = (calendarList[key] || []).map((c) => `<p>${c}</p>`).join('');
     const gEvents = (gcalCache[mk] || {})[key] || [];
     const gHtml = gEvents
-      .map((e) => `<p class="gcal-event ${e.type === 'holiday' ? 'gcal-holiday' : ''}">${esc(e.title)}</p>`)
+      .map((e) => `<p class="gcal-event ${e.type === 'holiday' ? 'gcal-holiday' : ''}" data-id="${e.id}">${esc(e.title)}${e.days > 1 ? ` (${e.n + 1}/${e.days})` : ''}</p>`)
       .join('');
     const holidayHtml = holiday ? `<p class="holiday-name">${holiday}</p>` : '';
 
@@ -99,7 +102,7 @@ const renderCal = (date) => {
     if (gEvents.some((e) => e.type === 'holiday')) classes.push('used-holiday');
 
 
-      html += `<div class="${classes.join(' ')}">
+      html += `<div class="${classes.join(' ')}" data-date="${key}">
         <span class="num">${i}</span>
         <span class="shift ${shift.cls}">${shift.label}</span>
         ${holidayHtml}${items}${gHtml}
@@ -145,3 +148,43 @@ document.addEventListener('gcal-login', () => {
 
 // 일정 추가/삭제하면 현재 달 다시 불러오기
 document.addEventListener('gcal-changed', () => loadGcal(date));
+// ===== 날짜 칸 클릭: 일정 추가 / 일정 클릭: 삭제 =====
+const dialog = document.getElementById('gcal-dialog');
+
+document.querySelector('.date-board').addEventListener('click', async (ev) => {
+  const evEl = ev.target.closest('.gcal-event');
+  if (evEl) {
+    if (!confirm(`"${evEl.textContent}" 일정을 삭제할까요?\n(여러 날짜 일정은 전체 기간이 삭제돼요)`)) return;
+    if (await gcal.deleteEvent(evEl.dataset.id)) {
+      await gcal.refreshHolidays();
+      loadGcal(date);
+    }
+    return;
+  }
+
+  const cell = ev.target.closest('[data-date]');
+  if (!cell) return;
+  if (!gcalLoggedIn) return alert('맨 아래 구글 로그인을 먼저 하세요');
+
+  dialog.dataset.date = cell.dataset.date;
+  document.getElementById('dlg-date').textContent = cell.dataset.date + ' 부터';
+  document.getElementById('dlg-title').value = '';
+  document.getElementById('dlg-days').value = 1;
+  dialog.showModal();
+});
+
+document.getElementById('dlg-save').onclick = async () => {
+  const title = document.getElementById('dlg-title').value.trim();
+  const type = document.getElementById('dlg-type').value;
+  const days = Math.max(1, Math.min(31, parseInt(document.getElementById('dlg-days').value, 10) || 1));
+  if (!title) return alert('제목을 입력하세요');
+
+  const result = await gcal.addEvent(title, dialog.dataset.date, type, days);
+  if (result) {
+    dialog.close();
+    await gcal.refreshHolidays();
+    loadGcal(date);
+  }
+};
+
+document.getElementById('dlg-cancel').onclick = () => dialog.close();
