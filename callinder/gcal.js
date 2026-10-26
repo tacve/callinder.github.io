@@ -25,6 +25,8 @@
   let events = [];   // [{ id, date, days, title, type }]
   let dayMap = {};   // 'YYYY-MM-DD' -> [{ id, title, type, n, days }]
   let loadError = null;
+  let viewY = new Date().getFullYear();
+  let viewM = new Date().getMonth();
 
   const pad = (n) => String(n).padStart(2, '0');
 
@@ -173,17 +175,35 @@
   }
 
   // ===== 사용한 휴일 / 연차 / 병가 목록 =====
-  function renderLists() {
+    function renderLists() {
+    const monthPrefix = `${viewY}-${pad(viewM + 1)}`;
+
     [
       ['holiday', 'holiday-list', 'holiday-count'],
       ['annual', 'annual-list', 'annual-count'],
       ['sick', 'sick-list', 'sick-count'],
     ].forEach(([type, ulId, cntId]) => {
-      const list = events.filter((e) => e.type === type);
-      const total = list.reduce((s, e) => s + e.days, 0);
+      let list = events.filter((e) => e.type === type);
+      let total = list.reduce((s, e) => s + e.days, 0);
+      let label = `(총 ${total}일)`;
+
+      // 휴일은 보고 있는 달에 걸친 것만, 그 달 일수만 센다
+      if (type === 'holiday') {
+        const inMonth = (e) => {
+          let c = 0;
+          for (let n = 0; n < e.days; n++) {
+            if (addDays(e.date, n).startsWith(monthPrefix)) c++;
+          }
+          return c;
+        };
+        list = list.filter((e) => inMonth(e) > 0);
+        total = list.reduce((s, e) => s + inMonth(e), 0);
+        label = `(${viewM + 1}월 ${total}일)`;
+      }
+
       const ul = document.getElementById(ulId);
       ul.innerHTML = '';
-      document.getElementById(cntId).textContent = `(총 ${total}일)`;
+      document.getElementById(cntId).textContent = label;
 
       list.forEach((ev) => {
         const li = document.createElement('li');
@@ -215,6 +235,7 @@
     stats,
     isLoggedIn: () => !!accessToken,
     getError: () => loadError,
+    setView: (y, m) => { viewY = y; viewM = m; renderLists(); },
   };
 
   loadEvents();

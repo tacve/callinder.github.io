@@ -89,7 +89,8 @@ const renderCal = (date) => {
   }
 
   document.querySelector('.date-board').innerHTML = html;
-
+  gcal.setView(viewYear, viewMonth);
+  
   // ===== 상단 요약 =====
   const st = gcal.stats(viewYear, viewMonth);
   const hLeft = calendarOffDays - st.holidayUsed;

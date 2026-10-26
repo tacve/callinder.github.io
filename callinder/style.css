@@ -94,3 +94,19 @@
 .gcal-footer { text-align: center; margin: 24px 0; }
 .gcal-footer button { padding: 8px 20px; cursor: pointer; }
 .gcal-note { font-size: 13px; color: #888; margin: 8px 0 0; }
+
+/* 달력 7열 격자 복구 */
+.calendar { width: 100%; }
+.calendar .grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+.calendar .date-board > div,
+.calendar .date-title > div {
+  min-width: 0;
+  box-sizing: border-box;
+}
+.calendar .date-board > div {
+  min-height: 90px;
+  overflow: hidden;
+}
