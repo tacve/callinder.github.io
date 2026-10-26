@@ -8,6 +8,7 @@
 
 body {
   background: #f8f8f8;
+  background-color: rgb(242, 217, 184);
   color: #262626;
 }
 
@@ -226,6 +227,7 @@ button {
   border: 1px solid #ededed;
   border-radius: 8px;
   background: #fff;
+  background-color: #fff8ee;
   overflow: hidden;
 }
 
@@ -240,15 +242,18 @@ button {
 
 .date-board > div.sat {
   background: #f0f5ff;
+  background-color: #e8f0fa;
 }
 
 .date-board > div.holiday {
   background: rgba(255, 200, 200, .5);
+  background-color: #fbe9e7;
 }
 
 .date-board .num {
   font-size: .9rem;
   font-weight: 700;
+  background-color: #fbe9e7;
 }
 
 .date-board .sun .num,
@@ -277,22 +282,22 @@ button {
   font-weight: 700;
   white-space: nowrap;
 }
-
+/* 주간 */
 .shift.day {
   background: #ffdb79;
   color: #704d00;
 }
-
+/* 야간 */
 .shift.night {
   background: #a9caff;
   color: #174a8b;
 }
-
+/* 비번 */
 .shift.off {
   background: #d7b0ff;
   color: #61318d;
 }
-
+/* 휴무 */
 .shift.rest {
   background: #a8e8b6;
   color: #176b36;
@@ -434,4 +439,115 @@ button {
   .date-board .num { font-size: .76rem; }
   .shift { font-size: .57rem; padding: 2px 4px; }
   .date-board .holiday-name, .gcal-event { font-size: .58rem; padding: 2px; }
+}
+
+/* ===== 근무 유형 색상 ===== */
+.shift.day {
+  background-color: #ffdb79 !important;
+  color: #493600 !important;
+}
+
+.shift.night {
+  background-color: #a9caff !important;
+  color: #17365d !important;
+}
+
+.shift.off {
+  background-color: #d7b0ff !important;
+  color: #43205f !important;
+}
+
+.shift.rest {
+  background-color: #b9e8c5 !important;
+  color: #174d2b !important;
+}
+
+/* ===== 일정 종류별 색상 ===== */
+.gcal-event {
+  display: block;
+  margin-top: 3px;
+  padding: 3px 5px;
+  border-radius: 4px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.gcal-event.gcal-holiday {
+  background-color: #ffd6d6 !important;
+  color: #922222 !important;
+}
+
+.gcal-event.gcal-annual {
+  background-color: #d8e8ff !important;
+  color: #174b8b !important;
+}
+
+.gcal-event.gcal-sick {
+  background-color: #e9d9ff !important;
+  color: #5a2b85 !important;
+}
+
+/* ===== 작은 화면: 일정 영역을 아래로 이동 ===== */
+@media screen and (max-width: 800px) {
+  .layout {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch;
+  }
+
+  .sidebar {
+    order: 2;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .main {
+    order: 1;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .calendar {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .date-board {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* 더 작은 휴대폰 */
+@media screen and (max-width: 480px) {
+  .date-title {
+    font-size: 14px;
+  }
+
+  .shift {
+    font-size: 11px;
+    padding: 2px 3px;
+  }
+
+  .gcal-event {
+    font-size: 10px;
+    padding: 2px 3px;
+  }
+}
+/* 작은 화면에서 휴일·연차·병가 일정 목록만 달력 아래로 이동 */
+@media screen and (max-width: 800px) {
+  .main {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 달력은 위쪽 */
+  .calendar {
+    order: 1;
+  }
+
+  /* 휴일·연차·병가 일정 목록은 아래쪽 */
+  .event-lists {
+    order: 2;
+  }
 }
