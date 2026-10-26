@@ -60,6 +60,7 @@ const renderCal = (date) => {
 
     count[shift.cls]++;
     if (dow === 0 || dow === 6 || holiday) calendarOffDays++;
+    if (shift.cls === 'rest') calendarOffDays--;  
 
     const items = (calendarList[key] || []).map((c) => `<p>${c}</p>`).join('');
     const holidayHtml = holiday ? `<p class="holiday-name">${holiday}</p>` : '';
@@ -90,7 +91,7 @@ const renderCal = (date) => {
 
   document.querySelector('.date-board').innerHTML = html;
   gcal.setView(viewYear, viewMonth);
-  
+
   // ===== 상단 요약 =====
   const st = gcal.stats(viewYear, viewMonth);
   const hLeft = calendarOffDays - st.holidayUsed;
