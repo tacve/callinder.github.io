@@ -66,9 +66,9 @@
   background: #e8f0fe;
   color: #1a56c4;
 }
-.gcal-holiday { background: #fde7e9; color: #c0392b; }
-.gcal-annual  { background: #e6f4ea; color: #1e7e34; }
-.gcal-sick    { background: #f3e8ff; color: #7b2cbf; }
+.gcal-holiday { background: rgba(255, 200, 200, 0.5); color: #d33; }
+.gcal-annual  { background: rgba(255, 200, 200, 0.5); color: #1e7e34; }
+.gcal-sick    { background: rgba(255, 200, 200, 0.5); color: #7b2cbf; }
 
 .used-holiday { outline: 2px solid #f4a3ab; outline-offset: -2px; }
 .used-annual  { outline: 2px solid #8fd19e; outline-offset: -2px; }
@@ -109,4 +109,5 @@
 .calendar .date-board > div {
   min-height: 90px;
   overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.4);
 }
