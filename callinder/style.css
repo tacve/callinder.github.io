@@ -196,15 +196,15 @@ button {
 .date-title > div:last-child {
   color: #36c;
 }
-
+/* 달력 평일 */
 .date-board > div {
   min-width: 0;
   min-height: 128px;
   padding: 9px 7px;
-  border: 1px solid #ededed;
+  border: 1px solid #d6b98c;
   border-radius: 8px;
+  background: #f1dfc0;
   background: #fff;
-  background-color: #f8ebd5;
   overflow: hidden;
 }
 
@@ -212,14 +212,13 @@ button {
   border-color: transparent;
   background: transparent;
 }
-
+/* 달력 일요일 */
 .date-board > div.sun {
-  background: #fff4f4;
+  background: #f1cdc5;
 }
-
+/* 달력 토요일 */
 .date-board > div.sat {
-  background: #f0f5ff;
-  background-color: #e8f0fa;
+  background: #d3e2f4;
 }
 
 .date-board > div.holiday {
