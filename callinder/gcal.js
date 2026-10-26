@@ -19,6 +19,21 @@
   let viewYear = 2026;
   let viewMonth = 9;
   let requestId = 0;
+  let expandedCache = null;
+
+  // 연차·병가 합산을 위해 한 번에 불러올 전체 기간
+  const RANGE_START = "2026-01-01";
+  const RANGE_END = "2028-06-01";
+
+  // 연차: 기준일 9월 10일, 1년차 15개 / 2년차 13개
+  const ANNUAL_PERIODS = [
+    { start: "2026-09-10", end: "2027-09-09", total: 15 },
+    { start: "2027-09-10", end: "2028-05-19", total: 13 }
+  ];
+
+  // 병가: 전역일까지 총 30개
+  const SICK_TOTAL = 30;
+  const SICK_END = "2028-05-19";
 
   const typeToTag = {
     holiday: "휴일",
@@ -77,8 +92,9 @@
   }
 
   // 여러 날에 걸친 일정을 날짜별로 전개
-  function expandedEvents() {
-    const result = [];
+    function expandedEvents() {
+        if (expandedCache) return expandedCache;
+        const result = [];
 
     for (const event of events) {
       const start = eventStart(event);
@@ -112,7 +128,7 @@
         });
       }
     }
-
+    expandedCache = result;
     return result;
   }
 
@@ -134,8 +150,8 @@
     const myId = ++requestId; // 가장 최근 요청만 화면에 반영
 
     try {
-      const startDate = new Date(viewYear, viewMonth, 1);
-      const endDate = new Date(viewYear, viewMonth + 1, 1);
+      const startDate = new Date(`${RANGE_START}T00:00:00`);
+      const endDate = new Date(`${RANGE_END}T00:00:00`);
 
       const params = new URLSearchParams({
         key: API_KEY,
@@ -178,6 +194,7 @@
       if (myId !== requestId) return; // 더 최근 요청이 있으면 이 결과는 버림
 
       events = data.items || [];
+      expandedCache = null;
       loadError = "";
 
       setStatus(
@@ -322,19 +339,55 @@
     await loadEvents();
   }
 
-  function annualTotal(year, month) {
-    const key =
-      `${year}-${String(month + 1).padStart(2, "0")}-01`;
+   // 보고 있는 달이 속한 연차 기간 (없으면 null)
+  function annualPeriod(year, month) {
+    const mid = `${year}-${String(month + 1).padStart(2, "0")}-15`;
+    return ANNUAL_PERIODS.find(p => mid >= p.start && mid <= p.end) || null;
+  }
 
-    if (key >= "2026-09-01" && key <= "2027-09-01") {
-      return 15;
+  function stats(year, month) {
+    const prefix = `${year}-${String(month + 1).padStart(2, "0")}`;
+    const period = annualPeriod(year, month);
+
+    const used = {
+      holiday: new Set(),
+      annual: new Set(),
+      sick: new Set()
+    };
+
+    for (const event of expandedEvents()) {
+      // 휴일: 보고 있는 달만
+      if (event.type === "holiday" && event.key.startsWith(prefix)) {
+        used.holiday.add(event.key);
+      }
+
+      // 연차: 해당 연차 기간 전체
+      if (
+        event.type === "annual" &&
+        period &&
+        event.key >= period.start &&
+        event.key <= period.end
+      ) {
+        used.annual.add(event.key);
+      }
+
+      // 병가: 전역일까지 전체
+      if (event.type === "sick" && event.key <= SICK_END) {
+        used.sick.add(event.key);
+      }
     }
 
-    if (key >= "2027-09-01" && key <= "2028-05-01") {
-      return 13;
-    }
-
-    return 0;
+    return {
+      holidayUsed: used.holiday.size,
+      annual: {
+        total: period ? period.total : 0,
+        used: used.annual.size
+      },
+      sick: {
+        total: SICK_TOTAL,
+        used: used.sick.size
+      }
+    };
   }
 
   function stats(year, month) {
@@ -441,22 +494,12 @@
     getError: () => loadError,
 
     setView: (year, month) => {
-      const changed =
-        viewYear !== year || viewMonth !== month;
-
       viewYear = year;
       viewMonth = month;
 
+      // 전체 기간을 이미 불러왔으므로 달을 넘길 때 다시 요청하지 않음
       renderLists();
-
-      // 월이 실제로 바뀐 경우에만 다시 요청
-      // gcal-data 이벤트로 인한 반복 요청 방지
-      if (changed) {
-        loadEvents();
-     }
     },
-
-    renderLists
   };
 
     document
