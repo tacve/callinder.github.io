@@ -61,9 +61,9 @@ function renderSummary(year, month, holidayUsed) {
      <div class="stat-detail">사용 ${holidayUsed}일 · 남음 ${holidayRemaining}일</div>`;
 
   document.querySelector("#annual-summary").innerHTML =
-    `<div class="stat-main">총 ${stats.annual.total}일</div>
-     <div class="stat-detail">사용 ${stats.annual.used}일 · 남음 ${Math.max(0, stats.annual.total - stats.annual.used)}일</div>`;
-
+    `<div class="stat-main">남음 ${Math.max(0, stats.annual.total - stats.annual.used)}일</div>
+     <div class="stat-detail">총 ${stats.annual.total}일 · 사용 ${stats.annual.used}일</div>`;
+     
   document.querySelector("#sick-summary").innerHTML =
     `<div class="stat-main">총 ${stats.sick.total}일</div>
      <div class="stat-detail">사용 ${stats.sick.used}일 · 남음 ${Math.max(0, stats.sick.total - stats.sick.used)}일</div>`;
