@@ -28,8 +28,6 @@
             <div class="grid date-board"></div>
         </div>
     </div>
-
-    <!-- 아래부터 새로 추가한 부분 -->
     <dialog id="gcal-dialog">
         <h3 id="dlg-date"></h3>
         <input type="text" id="dlg-title" placeholder="일정 제목">
@@ -43,6 +41,15 @@
             <button type="button" id="dlg-cancel">취소</button>
         </div>
     </dialog>
+    <div class="holiday-box">
+        <h3>사용한 휴일 <span id="holiday-count"></span></h3>
+        <ul id="holiday-list"></ul>
+    </div>
+
+    <div class="gcal-footer">
+        <button id="gcal-login">구글 로그인</button>
+    </div>
+</div>
 </div>
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
