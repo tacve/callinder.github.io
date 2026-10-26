@@ -126,16 +126,11 @@
   }
 
   // 현재 표시 중인 달의 일정 불러오기
+  
+  // 현재 표시 중인 달의 일정을 불러온다.
+  // 공개 일정은 로그인 없이 조회하고,
+  // 로그인되어 있으면 인증 토큰을 함께 보낸다.
   async function loadEvents() {
-    if (!accessToken) {
-        events = [];
-        loadError = "";
-        renderLists();
-        window.dispatchEvent(new CustomEvent("gcal-data"));
-        return;
-    }
-
-    // 동시에 같은 요청이 중복 실행되는 것 방지
     if (loading) return;
     loading = true;
 
@@ -148,16 +143,19 @@
         singleEvents: "true",
         orderBy: "startTime",
         timeMin: startDate.toISOString(),
-        timeMax: endDate.toISOString()
+        timeMax: endDate.toISOString(),
+        maxResults: "2500"
       });
+
+      const headers = {};
+
+      if (accessToken) {
+        headers.Authorization = `Bearer ${accessToken}`;
+      }
 
       const response = await fetch(
         `${API_BASE}?${params}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        }
+        { headers }
       );
 
       if (!response.ok) {
@@ -178,7 +176,11 @@
       events = data.items || [];
       loadError = "";
 
-      setStatus("Google Calendar에 연결되었습니다.");
+      setStatus(
+        accessToken
+          ? "Google Calendar에 연결되었습니다."
+          : "공개 Google Calendar 일정을 불러왔습니다."
+      );
     } catch (error) {
       loadError = error.message || "일정을 불러오지 못했습니다.";
       setStatus(loadError);
@@ -186,10 +188,10 @@
       loading = false;
       renderLists();
 
-      // 다른 화면 모듈에 데이터 변경 알림
       window.dispatchEvent(new CustomEvent("gcal-data"));
     }
   }
+
 
   function login() {
     if (!CLIENT_ID || CLIENT_ID.startsWith("YOUR_")) {
@@ -444,9 +446,9 @@
 
       // 월이 실제로 바뀐 경우에만 다시 요청
       // gcal-data 이벤트로 인한 반복 요청 방지
-      if (changed && accessToken) {
+      if (changed) {
         loadEvents();
-      }
+     }
     },
 
     renderLists
