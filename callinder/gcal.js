@@ -1,10 +1,9 @@
 (function () {
   const CLIENT_ID = '833093832712-kahs812ro4jcv9o0oh67qnmn24usu7oa.apps.googleusercontent.com';
-  const API_KEY = '여기에_새_API_키';
+  const API_KEY = 'AIzaSyAq8yWBFEryjyoWAtqYtzY4Dj82w5w8uww';
   const CAL_ID = 'wooo52735273@gmail.com';
-  const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
-  const BASE = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CAL_ID)}/events`;
-
+  const SCOPES ='https://www.googleapis.com/auth/calendar.events';
+  const BASE =`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CAL_ID)}/events`;
   // 불러올 기간
   const RANGE_START = '2026-01-01';
   const RANGE_END = '2029-01-01';
@@ -38,11 +37,22 @@
   const diffDays = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000);
 
   // 제목 <-> 종류
-  function parseTitle(summary) {
-    const m = /^\[(휴일|연차|병가)\]\s*(.*)$/.exec(summary || '');
-    if (!m) return { type: 'normal', title: summary || '(제목 없음)' };
-    return { type: TAG_TO_TYPE[m[1]], title: m[2] || m[1] };
+  
+function parseTitle(summary) {
+  const m = /^\[(휴일|연차|병가)\](?:\s+(.*))?$/.exec(
+    (summary || '').trim()
+  );
+
+  if (!m) {
+    return { type: 'normal', title: summary || '(제목 없음)' };
   }
+
+  return {
+    type: TAG_TO_TYPE[m[1]],
+    title: m[2] || m[1],
+  };
+}
+
   function buildTitle(type, title) {
     if (type === 'normal') return title;
     return `[${TAG[type]}]` + (title ? ' ' + title : '');
