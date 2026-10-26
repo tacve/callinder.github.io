@@ -38,18 +38,22 @@
 
   // 제목 <-> 종류
   
-function parseTitle(summary) {
-  const m = /^\[(휴일|연차|병가)\](?:\s+(.*))?$/.exec(
-    (summary || '').trim()
-  );
 
-  if (!m) {
-    return { type: 'normal', title: summary || '(제목 없음)' };
+function parseTitle(summary) {
+  const text = (summary || '').trim();
+
+  const m = /^\[(휴일|연차|병가)\](?:\s+(.*))?$/.exec(text);
+
+  if (m) {
+    return {
+      type: TAG_TO_TYPE[m[1]],
+      title: (m[2] || '').trim() || m[1],
+    };
   }
 
   return {
-    type: TAG_TO_TYPE[m[1]],
-    title: m[2] || m[1],
+    type: 'normal',
+    title: text || '(제목 없음)',
   };
 }
 

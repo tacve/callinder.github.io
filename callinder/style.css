@@ -275,3 +275,53 @@
   color: #d33;
   font-weight: bold;
 }
+
+/* ===== 근무 색상 강제 적용 테스트 ===== */
+.calendar .date-board .shift.day {
+  background-color: #ffe08a !important;
+  color: #704900 !important;
+  padding: 3px 7px !important;
+  border-radius: 5px !important;
+}
+
+.calendar .date-board .shift.night {
+  background-color: #9ec5fe !important;
+  color: #123d80 !important;
+  padding: 3px 7px !important;
+  border-radius: 5px !important;
+}
+
+.calendar .date-board .shift.off {
+  background-color: #d8b4fe !important;
+  color: #542080 !important;
+  padding: 3px 7px !important;
+  border-radius: 5px !important;
+}
+
+.calendar .date-board .shift.rest {
+  background-color: #a7e8b5 !important;
+  color: #155724 !important;
+  padding: 3px 7px !important;
+  border-radius: 5px !important;
+}
+
+/* 구글 캘린더 일정 색상 */
+.calendar .date-board .gcal-event.gcal-normal {
+  background: #cfe2ff !important;
+  color: #084298 !important;
+}
+
+.calendar .date-board .gcal-event.gcal-holiday {
+  background: #f8d7da !important;
+  color: #842029 !important;
+}
+
+.calendar .date-board .gcal-event.gcal-annual {
+  background: #d1e7dd !important;
+  color: #0f5132 !important;
+}
+
+.calendar .date-board .gcal-event.gcal-sick {
+  background: #e2d5f5 !important;
+  color: #542080 !important;
+}
