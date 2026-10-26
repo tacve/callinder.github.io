@@ -1,6 +1,6 @@
 // ===== 일정 데이터 =====
 const data = [
-  { date: '2024-10-15', content: '테스트1' },
+  { date: '2024-10-26', content: '오늘' },
 ];
 
 const calendarList = data.reduce((acc, v) => {
@@ -18,8 +18,7 @@ const SHIFTS = [
   { label: '휴무', cls: 'rest' },
 ];
 
-// 이 날이 '주간'인 날로 바꾸세요 (월은 0부터: 10월 = 9)
-const BASE_DATE = new Date(2026, 9, 2);
+const BASE_DATE = new Date(2026, 9, 26); // 2026-10-26 주간시작
 
 const getShift = (year, month, day) => {
   const target = new Date(year, month, day);
