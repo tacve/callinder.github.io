@@ -1,137 +1,117 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>근무 및 휴일 달력</title>
-
-    <!-- Pretendard 폰트 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>근무 · 휴일 달력</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+  <div class="container">
+    <header class="header">
+      <button class="nav-btn" id="prev-month" type="button">‹</button>
+      <h1 class="date-now">2026년 10월</h1>
+      <button class="nav-btn" id="next-month" type="button">›</button>
+    </header>
 
-        <!-- 상단 달력 제목 -->
-        <header class="header">
-            <button type="button" class="nav-btn" id="prev-month" aria-label="이전 달">
-                &#10094;
-            </button>
-
-            <h1 class="date-now">2026년 10월</h1>
-
-            <button type="button" class="nav-btn" id="next-month" aria-label="다음 달">
-                &#10095;
-            </button>
-        </header>
-
-        <!-- 휴일/연차/병가 요약 -->
+    <div class="layout">
+      <aside class="sidebar">
         <section class="summary">
-            <p>달력 정보를 불러오는 중...</p>
+          <div class="stat stat-holiday">
+            <h2>휴일</h2>
+            <div id="holiday-summary">계산 중...</div>
+          </div>
+          <div class="stat stat-annual">
+            <h2>연차</h2>
+            <div id="annual-summary">계산 중...</div>
+          </div>
+          <div class="stat stat-sick">
+            <h2>병가</h2>
+            <div id="sick-summary">계산 중...</div>
+          </div>
         </section>
 
-        <!-- Google Calendar 로그인 -->
-        <section class="gcal-login-area" style="text-align: center; padding-top: 16px;">
-            <button type="button" id="gcal-login">Google Calendar 로그인</button>
+        <section class="side-section">
+          <div class="section-heading">
+            <h2>일정 목록</h2>
+            <button id="gcal-login" class="small-button" type="button">
+              Google 로그인
+            </button>
+          </div>
+
+          <p id="gcal-status" class="muted">
+            Google Calendar 연결 전입니다.
+          </p>
+
+          <div class="event-list-group">
+            <h3 class="holiday-heading">휴일 일정</h3>
+            <ul id="holiday-list"></ul>
+          </div>
+
+          <div class="event-list-group">
+            <h3 class="annual-heading">연차 일정</h3>
+            <ul id="annual-list"></ul>
+          </div>
+
+          <div class="event-list-group">
+            <h3 class="sick-heading">병가 일정</h3>
+            <ul id="sick-list"></ul>
+          </div>
+
+          <div class="event-list-group">
+            <h3>일반 일정</h3>
+            <ul id="normal-list"></ul>
+          </div>
         </section>
+      </aside>
 
-        <!-- 달력 -->
-        <main class="main">
-            <section class="calendar" aria-label="월간 달력">
-
-                <!-- 요일 제목 -->
-                <div class="grid date-title">
-                    <div>일</div>
-                    <div>월</div>
-                    <div>화</div>
-                    <div>수</div>
-                    <div>목</div>
-                    <div>금</div>
-                    <div>토</div>
-                </div>
-
-                <!-- 날짜가 JavaScript로 표시되는 영역 -->
-                <div class="grid date-board"></div>
-
-            </section>
-        </main>
-
-        <!-- Google Calendar 일정 목록 -->
-        <section class="gcal-footer">
-            <h2>Google Calendar 일정</h2>
-            <div class="gcal-lists">
-                <div class="holiday-box">
-                    <h3>휴일</h3>
-                    <ul id="holiday-list"></ul>
-                </div>
-
-                <div class="annual-box">
-                    <h3>연차</h3>
-                    <ul id="annual-list"></ul>
-                </div>
-
-                <div class="sick-box">
-                    <h3>병가</h3>
-                    <ul id="sick-list"></ul>
-                </div>
-
-                <div class="normal-box">
-                    <h3>기타 일정</h3>
-                    <ul id="normal-list"></ul>
-                </div>
-            </div>
+      <main class="main">
+        <section class="calendar">
+          <div class="grid date-title">
+            <div>일</div><div>월</div><div>화</div>
+            <div>수</div><div>목</div><div>금</div><div>토</div>
+          </div>
+          <div class="grid date-board"></div>
         </section>
-
-        <!-- 일정 추가/수정 다이얼로그 -->
-        <dialog id="gcal-dialog">
-            <form id="gcal-form">
-                <h2>일정 관리</h2>
-
-                <label for="gcal-date">날짜</label>
-                <input type="date" id="gcal-date" name="date" required>
-
-                <label for="gcal-type">일정 종류</label>
-                <select id="gcal-type" name="type">
-                    <option value="normal">일반 일정</option>
-                    <option value="holiday">휴일</option>
-                    <option value="annual">연차</option>
-                    <option value="sick">병가</option>
-                </select>
-
-                <label for="gcal-title">일정 제목</label>
-                <input
-                    type="text"
-                    id="gcal-title"
-                    name="title"
-                    placeholder="일정 제목을 입력하세요"
-                >
-
-                <label for="gcal-end-date">종료일 (선택)</label>
-                <input type="date" id="gcal-end-date" name="endDate">
-
-                <div class="dlg-buttons">
-                    <button type="submit" id="gcal-save">저장</button>
-                    <button type="button" id="gcal-delete">삭제</button>
-                    <button type="button" id="gcal-cancel">닫기</button>
-                </div>
-            </form>
-        </dialog>
-
+      </main>
     </div>
+  </div>
 
-    <!-- Google API -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <dialog id="gcal-dialog">
+    <form id="gcal-form">
+      <h2 id="dialog-heading">일정 추가</h2>
 
-    <!-- 공휴일 데이터 -->
-    <script src="holidays.js"></script>
+      <label for="gcal-date">시작일</label>
+      <input id="gcal-date" type="date" required>
 
-    <!-- Google Calendar 연동 -->
-    <script src="gcal.js"></script>
+      <label for="gcal-end-date">종료일</label>
+      <input id="gcal-end-date" type="date">
 
-    <!-- 달력 기능 -->
-    <script src="index.js"></script>
+      <label for="gcal-type">종류</label>
+      <select id="gcal-type">
+        <option value="normal">일반 일정</option>
+        <option value="holiday">휴일</option>
+        <option value="annual">연차</option>
+        <option value="sick">병가</option>
+      </select>
+
+      <label for="gcal-title">제목</label>
+      <input id="gcal-title" type="text" placeholder="일정 제목">
+
+      <div class="dlg-buttons">
+        <button type="submit" id="gcal-save" class="primary-button">저장</button>
+        <button type="button" id="gcal-delete" class="danger-button">삭제</button>
+        <button type="button" id="gcal-cancel" class="plain-button">닫기</button>
+      </div>
+
+      <p id="dialog-message" class="muted"></p>
+    </form>
+  </dialog>
+
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="holidays.js"></script>
+  <script src="gcal.js"></script>
+  <script src="index.js"></script>
 </body>
 </html>
-```
