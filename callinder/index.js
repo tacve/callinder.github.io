@@ -67,7 +67,7 @@ function renderSummary(year, month, holidayUsed) {
   document.querySelector("#sick-summary").innerHTML =
     `<div class="stat-main">총 ${stats.sick.total}일</div>
      <div class="stat-detail">사용 ${stats.sick.used}일 · 남음 ${Math.max(0, stats.sick.total - stats.sick.used)}일</div>`;
-}
+    }
 
 function renderCal(date) {
   const year = date.getFullYear();
