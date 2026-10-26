@@ -1,11 +1,10 @@
 (function () {
   // 본인의 Google Cloud 프로젝트 설정값으로 교체하세요.
-  const CLIENT_ID = "wooo52735273@gmail.com";
+  const CLIENT_ID = "833093832712-kahs812ro4jcv9o0oh67qnmn24usu7oa.apps.googleusercontent.com";
   const API_KEY = "AIzaSyAq8yWBFEryjyoWAtqYtzY4Dj82w5w8uww";
-  const CAL_ID = "primary";
+  const CAL_ID = "wooo52735273@gmail.com";
   const SCOPES = "https://www.googleapis.com/auth/calendar.events";
-  const API_BASE =
-    `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CAL_ID)}/events`;
+  const BASE =`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CAL_ID)}/events`;
 
   let accessToken = "";
   let events = [];
