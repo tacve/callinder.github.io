@@ -148,7 +148,7 @@ body {
 }
 .dlg-buttons { display: flex; gap: 8px; margin-top: 8px; }
 
-```css
+
 /* 화면 크기에 따른 달력 레이아웃 */
 * {
     min-width: 0;
