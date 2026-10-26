@@ -7,9 +7,11 @@
 }
 
 body {
-    background-color: rgb(242, 217, 184);
+    background-color: #f8f8f8;
+    color: #222;
 }
 
+/* ===== 상단 월 이동 ===== */
 .nav-btn {
     border: 0;
     background: none;
@@ -26,6 +28,7 @@ body {
     padding-top: 30px;
 }
 
+/* ===== 왼쪽 요약 ===== */
 .summary {
     text-align: center;
     padding: 10px 20px 0;
@@ -33,352 +36,183 @@ body {
     line-height: 1.6;
 }
 
+/* 요약 카드가 있는 기존 레이아웃 유지 */
+.layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 425px) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+    padding: 0 5%;
+}
+
+.summary .stat {
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    text-align: left;
+    background: transparent;
+}
+
+.summary .stat.holiday {
+    border-color: #ff8e9b;
+}
+
+.summary .stat.annual {
+    border-color: #7bd695;
+}
+
+.summary .stat.sick {
+    border-color: #c9a0ff;
+}
+
+/* ===== 달력 영역 ===== */
 .main {
     display: flex;
     justify-content: center;
-}
-
-.calendar {
-    width: 100%;
-    max-width: 800px;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    grid-gap: 5px;
-    padding: 20px;
-}
-
-.grid div {
-    padding: .6rem;
-    font-size: .9rem;
-}
-
-/* 요일 제목줄: 일=빨강, 토=파랑 */
-.date-title div:nth-child(1) { color: #d33; }
-.date-title div:nth-child(7) { color: #36c; }
-
-.date-board div {
-    color: #222;
-    font-weight: bold;
-    min-height: 100px;
-    padding: 10px 5px;
-    border-radius: 5px;
-    border: 1px solid #eee;
-    background-color: rgba(255, 255, 255, 0.4);
-}
-
-.date-board .noColor {
-    border: none;
-    background-color: transparent;
-}
-
-.date-board p {
-    font-size: .8rem;
-    font-weight: normal;
-    margin-top: 4px;
-}
-
-/* 근무 표시 */
-.shift {
-    display: inline-block;
-    font-size: .7rem;
-    padding: 1px 6px;
-    border-radius: 10px;
-    color: #fff;
-    font-weight: normal;
-}
-.shift.day   { background-color: #e0a030; }
-.shift.night { background-color: #3a4a8a; }
-.shift.off   { background-color: #7a9a7a; }
-.shift.rest  { background-color: #c0584a; }
-
-/* 요일/공휴일 색 (순서 중요: 공휴일이 맨 아래) */
-.date-board .sun .num { color: #d33; }
-.date-board .sat .num { color: #36c; }
-
-.date-board .holiday {
-    background-color: rgba(255, 200, 200, 0.5);
-}
-.date-board .holiday .num {
-    color: #d33;
-}
-.date-board .holiday-name {
-    color: #d33;
-    font-weight: bold;
-}
-.gcal-event {
-  font-size: 12px;
-  background: #e8f0fe;
-  color: #1a56c4;
-  border-radius: 4px;
-  padding: 1px 4px;
-  margin: 2px 0;
-}
-.gcal-holiday {
-  background: #fde7e9;
-  color: #c0392b;
-}
-.used-holiday {
-  outline: 2px solid #f4a3ab;
-  outline-offset: -2px;
-}
-.gcal-add,
-.holiday-box,
-.gcal-footer {
-  margin-top: 16px;
-}
-.holiday-box ul {
-  padding-left: 18px;
-}
-[data-date] { cursor: pointer; }
-.gcal-event { cursor: pointer; }
-#gcal-dialog {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 16px;
-}
-#gcal-dialog input,
-#gcal-dialog select {
-  display: block;
-  margin: 8px 0;
-  width: 100%;
-  box-sizing: border-box;
-}
-.dlg-buttons { display: flex; gap: 8px; margin-top: 8px; }
-
-
-/* 화면 크기에 따른 달력 레이아웃 */
-* {
     min-width: 0;
-}
-
-.container {
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 12px 30px;
-}
-
-.layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 20px;
 }
 
 .calendar {
     width: 100%;
     max-width: 1000px;
-    margin: 0 auto;
 }
 
-.date-title,
-.date-board {
+.grid {
+    display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-gap: 5px;
+    padding: 20px;
 }
 
+/* 요일 제목 */
 .date-title div {
     text-align: center;
-    font-weight: bold;
+    font-weight: normal;
 }
 
-.date-board > div {
-    min-width: 0;
-    overflow-wrap: anywhere;
-    transition: background-color 0.2s ease;
-}
-
-.date-board [data-date]:hover {
-    background-color: rgba(255, 255, 255, 0.75);
-}
-
-.gcal-event {
-    overflow-wrap: anywhere;
-}
-
-/* 태블릿 */
-@media (max-width: 900px) {
-    .grid {
-        gap: 3px;
-        padding: 10px;
-    }
-
-    .date-board div {
-        min-height: 80px;
-        padding: 6px 3px;
-        font-size: 0.8rem;
-    }
-
-    .shift {
-        font-size: 0.65rem;
-        padding: 1px 4px;
-    }
-}
-
-/* 휴대전화 */
-@media (max-width: 600px) {
-    .container {
-        padding: 0 4px 20px;
-    }
-
-    .header {
-        padding-top: 20px;
-    }
-
-    .nav-btn {
-        padding: 0 10px;
-        font-size: 1.2rem;
-    }
-
-    .summary {
-        padding: 8px 4px 0;
-        font-size: 0.8rem;
-    }
-
-    .grid {
-        gap: 2px;
-        padding: 5px 2px;
-    }
-
-    .grid div {
-        font-size: 0.75rem;
-    }
-
-    .date-board div {
-        min-height: 72px;
-        padding: 5px 2px;
-        border-radius: 3px;
-    }
-
-    .date-board p,
-    .gcal-event {
-        font-size: 0.65rem;
-    }
-
-    .shift {
-        font-size: 0.58rem;
-        padding: 1px 3px;
-    }
-
-    #gcal-dialog {
-        width: calc(100% - 24px);
-        max-width: 400px;
-        margin: auto;
-    }
-}
-/* ===== 기존 화면 유지 + 색상 적용 ===== */
-
-/* 전체 배경 */
-body {
-    background-color: rgb(242, 217, 184);
-    color: #222;
-}
-
-/* 왼쪽 요약 카드 */
-.stat.holiday {
-    border-color: #f4a3ab;
-}
-
-.stat.annual {
-    border-color: #7acb91;
-}
-
-.stat.sick {
-    border-color: #c9a0ff;
-}
-
-/* 달력 날짜 영역 */
-.date-board > div {
-    background-color: rgba(255, 255, 255, 0.4);
-    border: 1px solid #eee;
-    border-radius: 5px;
-}
-
-/* 빈 날짜 */
-.date-board > .noColor {
-    background-color: transparent;
-    border-color: transparent;
-}
-
-/* 일요일과 토요일 */
-.date-board .sun .num,
-.date-title div:first-child {
+.date-title div:nth-child(1) {
     color: #d33;
 }
 
-.date-board .sat .num,
-.date-title div:last-child {
+.date-title div:nth-child(7) {
     color: #36c;
 }
 
-/* 공휴일 */
+/* 날짜 칸 */
+.grid div {
+    padding: .6rem;
+    font-size: .9rem;
+}
+
+.date-board > div {
+    color: #222;
+    font-weight: normal;
+    min-height: 100px;
+    padding: 10px 5px;
+    border-radius: 0;
+    border: 1px solid transparent;
+    background-color: transparent;
+    overflow: hidden;
+}
+
+/* 주말 배경: 스크린샷처럼 세로로 이어지는 색감 */
+.date-board > div.sun {
+    background-color: #fff4f4;
+}
+
+.date-board > div.sat {
+    background-color: #f0f5ff;
+}
+
+/* 공휴일 배경 */
 .date-board > div.holiday {
-    background-color: rgba(255, 200, 200, 0.5);
+    background-color: #fff0f0;
+}
+
+.date-board > div.noColor {
+    border: none;
+    background-color: transparent;
+}
+
+/* 날짜 숫자 */
+.date-board .sun .num {
+    color: #f33;
+}
+
+.date-board .sat .num {
+    color: #2671d9;
 }
 
 .date-board .holiday .num,
 .date-board .holiday-name {
-    color: #d33;
+    color: #f22;
 }
 
 .date-board .holiday-name {
     font-weight: bold;
 }
 
-/* 주야비휴 근무 표시 */
+/* ===== 주야비휴 배지 ===== */
 .shift {
     display: inline-block;
-    padding: 1px 6px;
-    border-radius: 10px;
-    color: #fff;
-    font-size: 0.7rem;
-    font-weight: normal;
+    font-size: .7rem;
+    padding: 5px 8px;
+    border-radius: 7px;
+    color: #222;
+    font-weight: bold;
+    white-space: nowrap;
 }
 
 .shift.day {
-    background-color: #e0a030;
+    background-color: #ffdb79;
+    color: #6e4c00;
 }
 
 .shift.night {
-    background-color: #3a4a8a;
+    background-color: #a9caff;
+    color: #174a8b;
 }
 
 .shift.off {
-    background-color: #7a9a7a;
+    background-color: #d7b0ff;
+    color: #61318d;
 }
 
 .shift.rest {
-    background-color: #c0584a;
+    background-color: #a8e8b6;
+    color: #176b36;
 }
 
-/* Google Calendar 일정 */
+/* ===== Google Calendar 일정 ===== */
 .gcal-event {
-    margin: 2px 0;
-    padding: 2px 4px;
-    border-radius: 4px;
     font-size: 12px;
     font-weight: normal;
-    background-color: #e8f0fe;
-    color: #1a56c4;
+    background: #dce9ff;
+    color: #0753a6;
+    border-radius: 5px;
+    padding: 4px 5px;
+    margin: 2px 0;
+    overflow-wrap: anywhere;
+    cursor: pointer;
 }
 
 .gcal-event.gcal-holiday {
-    background-color: #fde7e9;
+    background: #ffe0e2;
     color: #c0392b;
 }
 
 .gcal-event.gcal-annual {
-    background-color: #e2f5e8;
+    background: #dcf5e3;
     color: #218447;
 }
 
 .gcal-event.gcal-sick {
-    background-color: #f0e5ff;
+    background: #eee0ff;
     color: #7541a5;
 }
 
-/* 일정이 등록된 날짜의 테두리 */
+/* 일정 종류별 날짜 테두리 */
 .date-board > div.used-holiday {
     outline: 2px solid #f4a3ab;
     outline-offset: -2px;
@@ -394,13 +228,71 @@ body {
     outline-offset: -2px;
 }
 
-/* 기존 날짜 배치와 상호작용 유지 */
-.date-board > div[data-date] {
-    cursor: pointer;
-    transition: background-color 0.15s ease;
+/* ===== 일정 목록 및 다이얼로그 ===== */
+.gcal-add,
+.holiday-box,
+.gcal-footer {
+    margin-top: 16px;
 }
 
-.date-board > div[data-date]:hover {
-    background-color: rgba(255, 255, 255, 0.8);
+.holiday-box ul {
+    padding-left: 18px;
 }
-```
+
+[data-date] {
+    cursor: pointer;
+}
+
+#gcal-dialog {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    margin: auto;
+    max-width: calc(100% - 24px);
+}
+
+#gcal-dialog input,
+#gcal-dialog select {
+    display: block;
+    margin: 8px 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.dlg-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* ===== 작은 화면에서도 레이아웃 유지 ===== */
+@media (max-width: 900px) {
+    .layout {
+        grid-template-columns: 1fr;
+        padding: 0 12px;
+    }
+
+    .summary {
+        padding: 10px 0 0;
+    }
+
+    .grid {
+        gap: 3px;
+        padding: 8px 2px;
+    }
+
+    .date-board > div {
+        min-height: 80px;
+        padding: 5px 2px;
+    }
+
+    .shift {
+        font-size: .62rem;
+        padding: 3px 5px;
+    }
+
+    .gcal-event {
+        font-size: .65rem;
+        padding: 2px;
+    }
+}
