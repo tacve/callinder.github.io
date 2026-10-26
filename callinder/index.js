@@ -224,5 +224,17 @@ document.querySelector("#gcal-delete").addEventListener("click", async () => {
   }
 });
 
-window.addEventListener("gcal-data", () => renderCal(currentDate));
-renderCal(currentDate);
+function safeRender() {
+  try {
+    renderCal(currentDate);
+  } catch (error) {
+    console.error(error);
+    ["#holiday-summary", "#annual-summary", "#sick-summary"].forEach(id => {
+      const el = document.querySelector(id);
+      if (el) el.textContent = "오류: " + error.message;
+    });
+  }
+}
+
+window.addEventListener("gcal-data", safeRender);
+safeRender();
