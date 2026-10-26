@@ -108,3 +108,27 @@ body {
     color: #d33;
     font-weight: bold;
 }
+.gcal-event {
+  font-size: 12px;
+  background: #e8f0fe;
+  color: #1a56c4;
+  border-radius: 4px;
+  padding: 1px 4px;
+  margin: 2px 0;
+}
+.gcal-holiday {
+  background: #fde7e9;
+  color: #c0392b;
+}
+.used-holiday {
+  outline: 2px solid #f4a3ab;
+  outline-offset: -2px;
+}
+.gcal-add,
+.holiday-box,
+.gcal-footer {
+  margin-top: 16px;
+}
+.holiday-box ul {
+  padding-left: 18px;
+}
