@@ -204,7 +204,6 @@ button {
   border: 1px solid #d6b98c;
   border-radius: 8px;
   background: #f1dfc0;
-  background: #fff;
   overflow: hidden;
 }
 
@@ -214,16 +213,15 @@ button {
 }
 /* 달력 일요일 */
 .date-board > div.sun {
-  background: #f1cdc5;
+  background: #f9d6d9;
 }
 /* 달력 토요일 */
 .date-board > div.sat {
   background: #d3e2f4;
 }
-
+/* 달력 공휴일 */
 .date-board > div.holiday {
-  background: rgba(255, 200, 200, .5);
-  background-color: #fbe9e7;
+  background: #f9d6d9;
 }
 
 .date-board .num {
