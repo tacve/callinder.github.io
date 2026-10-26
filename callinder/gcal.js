@@ -18,7 +18,7 @@
   let loadError = "";
   let viewYear = 2026;
   let viewMonth = 9;
-  let loading = false;
+  let requestId = 0;
 
   const typeToTag = {
     holiday: "휴일",
@@ -131,8 +131,7 @@
   // 공개 일정은 로그인 없이 조회하고,
   // 로그인되어 있으면 인증 토큰을 함께 보낸다.
   async function loadEvents() {
-    if (loading) return;
-    loading = true;
+    const myId = ++requestId; // 가장 최근 요청만 화면에 반영
 
     try {
       const startDate = new Date(viewYear, viewMonth, 1);
@@ -147,16 +146,20 @@
         maxResults: "2500"
       });
 
+      const url = `${API_BASE}?${params}`;
       const headers = {};
 
       if (accessToken) {
         headers.Authorization = `Bearer ${accessToken}`;
       }
 
-      const response = await fetch(
-        `${API_BASE}?${params}`,
-        { headers }
-      );
+      let response = await fetch(url, { headers });
+
+      // 로그인 토큰이 만료되면(401) 토큰 없이 공개 일정으로 다시 조회
+      if (response.status === 401 && accessToken) {
+        accessToken = "";
+        response = await fetch(url);
+      }
 
       if (!response.ok) {
         let detail = "";
@@ -172,6 +175,7 @@
       }
 
       const data = await response.json();
+      if (myId !== requestId) return; // 더 최근 요청이 있으면 이 결과는 버림
 
       events = data.items || [];
       loadError = "";
@@ -182,13 +186,14 @@
           : "공개 Google Calendar 일정을 불러왔습니다."
       );
     } catch (error) {
+      if (myId !== requestId) return;
       loadError = error.message || "일정을 불러오지 못했습니다.";
       setStatus(loadError);
     } finally {
-      loading = false;
-      renderLists();
-
-      window.dispatchEvent(new CustomEvent("gcal-data"));
+      if (myId === requestId) {
+        renderLists();
+        window.dispatchEvent(new CustomEvent("gcal-data"));
+      }
     }
   }
 
@@ -454,7 +459,10 @@
     renderLists
   };
 
-  document
-    .querySelector("#gcal-login")
-    ?.addEventListener("click", login);
+    document
+        .querySelector("#gcal-login")
+        ?.addEventListener("click", login);
+
+  // 페이지가 열리면 로그인 없이 공개 일정부터 불러오기
+  loadEvents();
 })();

@@ -87,18 +87,10 @@ button {
   margin-bottom: 5px;
   font-weight: 750;
 }
-
-.stat-holiday {
-  border-color: #ff8e9b;
-}
-
-.stat-annual {
-  border-color: #7bd695;
-}
-
-.stat-sick {
-  border-color: #c9a0ff;
-}
+.stat { border-width: 2px; }
+.stat-holiday { border-color: #d93a40; background: #ffeceb; }
+.stat-annual  { border-color: #238a4c; background: #e6f6ec; }
+.stat-sick    { border-color: #7b3fb8; background: #f1e8fb; }
 
 .stat-main {
   font-size: 1.08rem;
@@ -174,25 +166,10 @@ button {
   cursor: pointer;
 }
 
-.event-list-group li.type-holiday {
-  background: #ffe7e9;
-  color: #9e2631;
-}
-
-.event-list-group li.type-annual {
-  background: #e2f5e8;
-  color: #176b36;
-}
-
-.event-list-group li.type-sick {
-  background: #f0e5ff;
-  color: #61318d;
-}
-
-.event-list-group li.type-normal {
-  background: #e8f0fe;
-  color: #1a56c4;
-}
+.event-list-group li.type-holiday { background: #d93a40; color: #fff; }
+.event-list-group li.type-annual  { background: #238a4c; color: #fff; }
+.event-list-group li.type-sick    { background: #7b3fb8; color: #fff; }
+.event-list-group li.type-normal  { background: #2f6fed; color: #fff; }
 
 /* 달력 */
 .grid {
@@ -303,49 +280,41 @@ button {
   color: #176b36;
 }
 
-/* 일정 색상 */
+/* 일정 색상 (진하게) */
 .gcal-event {
   display: block;
   margin-top: 3px;
-  padding: 3px 5px;
+  padding: 3px 6px;
   border-radius: 5px;
   font-size: 11px;
-  background: #e8f0fe;
-  color: #1a56c4;
+  font-weight: 600;
+  background: #2f6fed;   /* 일반 */
+  color: #fff;
   overflow-wrap: anywhere;
   cursor: pointer;
 }
 
-.gcal-event.gcal-holiday {
-  background: #fde7e9;
-  color: #c0392b;
-}
-
-.gcal-event.gcal-annual {
-  background: #dcf5e3;
-  color: #218447;
-}
-
-.gcal-event.gcal-sick {
-  background: #eee0ff;
-  color: #7541a5;
-}
+.gcal-event.gcal-holiday { background: #d93a40; color: #fff; }  /* 휴일 */
+.gcal-event.gcal-annual  { background: #238a4c; color: #fff; }  /* 연차 */
+.gcal-event.gcal-sick    { background: #7b3fb8; color: #fff; }  /* 병가 */
 
 .date-board > div.used-holiday {
-  outline: 2px solid #f4a3ab;
+  background-color: #ffd3d6;
+  outline: 2px solid #d93a40;
   outline-offset: -2px;
 }
 
 .date-board > div.used-annual {
-  outline: 2px solid #7acb91;
+  background-color: #cdeedb;
+  outline: 2px solid #238a4c;
   outline-offset: -2px;
 }
 
 .date-board > div.used-sick {
-  outline: 2px solid #c9a0ff;
+  background-color: #e5d3fa;
+  outline: 2px solid #7b3fb8;
   outline-offset: -2px;
 }
-
 .date-board [data-date] {
   cursor: pointer;
 }
@@ -462,30 +431,6 @@ button {
   color: #174d2b !important;
 }
 
-/* ===== 일정 종류별 색상 ===== */
-.gcal-event {
-  display: block;
-  margin-top: 3px;
-  padding: 3px 5px;
-  border-radius: 4px;
-  font-size: 12px;
-  overflow-wrap: anywhere;
-}
-
-.gcal-event.gcal-holiday {
-  background-color: #ffd6d6 !important;
-  color: #922222 !important;
-}
-
-.gcal-event.gcal-annual {
-  background-color: #d8e8ff !important;
-  color: #174b8b !important;
-}
-
-.gcal-event.gcal-sick {
-  background-color: #e9d9ff !important;
-  color: #5a2b85 !important;
-}
 
 /* ===== 작은 화면: 일정 영역을 아래로 이동 ===== */
 @media screen and (max-width: 800px) {
