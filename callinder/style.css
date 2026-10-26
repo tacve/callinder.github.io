@@ -111,3 +111,167 @@
   overflow: hidden;
   background-color: rgba(255, 255, 255, 0.4);
 }
+
+/* ===== 주야비휴 근무 색상 ===== */
+.shift {
+  display: inline-block;
+  padding: 1px 6px;
+  margin: 2px 0;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.shift.day {
+  background-color: #fff0c2;
+  color: #8a5a00;
+}
+
+.shift.night {
+  background-color: #dce7ff;
+  color: #244eb5;
+}
+
+.shift.off {
+  background-color: #e9defa;
+  color: #7138a5;
+}
+
+.shift.rest {
+  background-color: #d8f3df;
+  color: #20743a;
+}
+
+/* ===== 날짜 칸의 요일 색상 ===== */
+.calendar .date-board > div.sun {
+  background-color: #fff1f1;
+}
+
+.calendar .date-board > div.sat {
+  background-color: #eff5ff;
+}
+
+.calendar .date-board > div.holiday {
+  background-color: #fff0f0;
+}
+
+/* 날짜 숫자 색상 */
+.calendar .date-board > div.sun .num,
+.calendar .date-board > div.holiday .num {
+  color: #d33;
+}
+
+.calendar .date-board > div.sat .num {
+  color: #2463c7;
+}
+
+/* ===== 구글 캘린더 일정 색상 ===== */
+.calendar .gcal-event {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 2px 4px;
+  margin: 3px 0;
+  border: 0;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+/* 일반 일정 */
+.calendar .gcal-event.gcal-normal {
+  background-color: #e8f0fe;
+  color: #1a56c4;
+}
+
+/* 휴일 일정 */
+.calendar .gcal-event.gcal-holiday {
+  background-color: #ffe0e3;
+  color: #b42332;
+}
+
+/* 연차 일정 */
+.calendar .gcal-event.gcal-annual {
+  background-color: #d8f3df;
+  color: #20743a;
+}
+
+/* 병가 일정 */
+.calendar .gcal-event.gcal-sick {
+  background-color: #eadcff;
+  color: #7138a5;
+}
+
+/* ===== 휴일·연차·병가 사용 날짜 테두리 ===== */
+.calendar .date-board > div.used-holiday {
+  outline: 2px solid #f4a3ab;
+  outline-offset: -2px;
+}
+
+.calendar .date-board > div.used-annual {
+  outline: 2px solid #8fd19e;
+  outline-offset: -2px;
+}
+
+.calendar .date-board > div.used-sick {
+  outline: 2px solid #c9a3f0;
+  outline-offset: -2px;
+}
+
+/* 공휴일 이름 */
+.calendar .holiday-name {
+  color: #d33;
+  font-size: 12px;
+  margin: 2px 0;
+}
+
+/* 근무 종류별 색상 */
+.calendar .date-board .shift.day {
+  background: #fff0c2;
+  color: #8a5a00;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.calendar .date-board .shift.night {
+  background: #dce7ff;
+  color: #244eb5;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.calendar .date-board .shift.off {
+  background: #eadcff;
+  color: #7138a5;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.calendar .date-board .shift.rest {
+  background: #d8f3df;
+  color: #20743a;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+/* 공휴일 날짜 칸 */
+.calendar .date-board > div.holiday {
+  background-color: #fff0f0;
+}
+
+/* 일요일과 토요일 날짜 칸 */
+.calendar .date-board > div.sun {
+  background-color: #fff5f5;
+}
+
+.calendar .date-board > div.sat {
+  background-color: #f2f6ff;
+}
+
+/* 공휴일 이름 */
+.calendar .holiday-name {
+  color: #d33;
+  font-weight: bold;
+}
