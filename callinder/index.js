@@ -56,17 +56,17 @@ function renderSummary(year, month, holidayUsed) {
   const holidayRemaining = Math.max(0, holidayAvailable - holidayUsed);
   const stats = gcal.stats(year, month);
 
+  const annualRemaining = Math.max(0, stats.annual.total - stats.annual.used);
+  const sickRemaining = Math.max(0, stats.sick.total - stats.sick.used);
+
   document.querySelector("#holiday-summary").innerHTML =
-    `<div class="stat-main">사용 가능 ${holidayAvailable}일</div>
-     <div class="stat-detail">사용 ${holidayUsed}일 · 남음 ${holidayRemaining}일</div>`;
+    `<div class="stat-main">${holidayRemaining}일 사용 가능</div>`;
 
   document.querySelector("#annual-summary").innerHTML =
-    `<div class="stat-main">총 ${stats.annual.total}일</div>
-     <div class="stat-detail">사용 ${stats.annual.used}일 · 남음 ${Math.max(0, stats.annual.total - stats.annual.used)}일</div>`;
+    `<div class="stat-main">${annualRemaining}일 사용 가능</div>`;
 
   document.querySelector("#sick-summary").innerHTML =
-    `<div class="stat-main">총 ${stats.sick.total}일</div>
-     <div class="stat-detail">사용 ${stats.sick.used}일 · 남음 ${Math.max(0, stats.sick.total - stats.sick.used)}일</div>`;
+    `<div class="stat-main">${sickRemaining}일 사용 가능</div>`;
 }
 
 function renderCal(date) {
