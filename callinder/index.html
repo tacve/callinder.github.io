@@ -9,10 +9,10 @@
 <body>
 <div class="container">
     <div class="header">
-    <button class="nav-btn date-last">&lt;</button>
-    <h2 class="date-now"></h2>
-    <button class="nav-btn date-next">&gt;</button>
-</div>
+        <button class="nav-btn date-last">&lt;</button>
+        <h2 class="date-now"></h2>
+        <button class="nav-btn date-next">&gt;</button>
+    </div>
     <div class="summary"></div>
     <div class="main">
         <div class="calendar">
@@ -28,7 +28,28 @@
             <div class="grid date-board"></div>
         </div>
     </div>
+
+    <!-- 아래부터 새로 추가한 부분 -->
+    <div class="gcal-add">
+        <input type="date" id="gcal-date">
+        <input type="text" id="gcal-title" placeholder="일정 제목">
+        <select id="gcal-type">
+            <option value="normal">일반 일정</option>
+            <option value="holiday">휴일</option>
+        </select>
+        <button id="gcal-add-btn">추가</button>
+    </div>
+
+    <div class="holiday-box">
+        <h3>사용한 휴일 <span id="holiday-count"></span></h3>
+        <ul id="holiday-list"></ul>
+    </div>
+
+    <div class="gcal-footer">
+        <button id="gcal-login">구글 로그인</button>
+    </div>
 </div>
+
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="holidays.js"></script>
 <script src="gcal.js"></script>
