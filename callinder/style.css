@@ -267,3 +267,140 @@ body {
         margin: auto;
     }
 }
+/* ===== 기존 화면 유지 + 색상 적용 ===== */
+
+/* 전체 배경 */
+body {
+    background-color: rgb(242, 217, 184);
+    color: #222;
+}
+
+/* 왼쪽 요약 카드 */
+.stat.holiday {
+    border-color: #f4a3ab;
+}
+
+.stat.annual {
+    border-color: #7acb91;
+}
+
+.stat.sick {
+    border-color: #c9a0ff;
+}
+
+/* 달력 날짜 영역 */
+.date-board > div {
+    background-color: rgba(255, 255, 255, 0.4);
+    border: 1px solid #eee;
+    border-radius: 5px;
+}
+
+/* 빈 날짜 */
+.date-board > .noColor {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+/* 일요일과 토요일 */
+.date-board .sun .num,
+.date-title div:first-child {
+    color: #d33;
+}
+
+.date-board .sat .num,
+.date-title div:last-child {
+    color: #36c;
+}
+
+/* 공휴일 */
+.date-board > div.holiday {
+    background-color: rgba(255, 200, 200, 0.5);
+}
+
+.date-board .holiday .num,
+.date-board .holiday-name {
+    color: #d33;
+}
+
+.date-board .holiday-name {
+    font-weight: bold;
+}
+
+/* 주야비휴 근무 표시 */
+.shift {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: normal;
+}
+
+.shift.day {
+    background-color: #e0a030;
+}
+
+.shift.night {
+    background-color: #3a4a8a;
+}
+
+.shift.off {
+    background-color: #7a9a7a;
+}
+
+.shift.rest {
+    background-color: #c0584a;
+}
+
+/* Google Calendar 일정 */
+.gcal-event {
+    margin: 2px 0;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: normal;
+    background-color: #e8f0fe;
+    color: #1a56c4;
+}
+
+.gcal-event.gcal-holiday {
+    background-color: #fde7e9;
+    color: #c0392b;
+}
+
+.gcal-event.gcal-annual {
+    background-color: #e2f5e8;
+    color: #218447;
+}
+
+.gcal-event.gcal-sick {
+    background-color: #f0e5ff;
+    color: #7541a5;
+}
+
+/* 일정이 등록된 날짜의 테두리 */
+.date-board > div.used-holiday {
+    outline: 2px solid #f4a3ab;
+    outline-offset: -2px;
+}
+
+.date-board > div.used-annual {
+    outline: 2px solid #7acb91;
+    outline-offset: -2px;
+}
+
+.date-board > div.used-sick {
+    outline: 2px solid #c9a0ff;
+    outline-offset: -2px;
+}
+
+/* 기존 날짜 배치와 상호작용 유지 */
+.date-board > div[data-date] {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.date-board > div[data-date]:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+```
