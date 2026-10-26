@@ -13,27 +13,49 @@
         <h2 class="date-now"></h2>
         <button class="nav-btn date-next">&gt;</button>
     </div>
-    <div class="summary"></div>
-    <div class="main">
-        <div class="calendar">
-            <div class="grid date-title">
-                <div>일</div>
-                <div>월</div>
-                <div>화</div>
-                <div>수</div>
-                <div>목</div>
-                <div>금</div>
-                <div>토</div>
+
+    <div class="layout">
+        <div class="summary"></div>
+
+        <div class="main">
+            <div class="calendar">
+                <div class="grid date-title">
+                    <div>일</div>
+                    <div>월</div>
+                    <div>화</div>
+                    <div>수</div>
+                    <div>목</div>
+                    <div>금</div>
+                    <div>토</div>
+                </div>
+                <div class="grid date-board"></div>
             </div>
-            <div class="grid date-board"></div>
+        </div>
+
+        <div class="lists">
+            <div class="list-box">
+                <h3>사용한 휴일 <span id="holiday-count"></span></h3>
+                <ul id="holiday-list"></ul>
+            </div>
+            <div class="list-box">
+                <h3>사용한 연차 <span id="annual-count"></span></h3>
+                <ul id="annual-list"></ul>
+            </div>
+            <div class="list-box">
+                <h3>사용한 병가 <span id="sick-count"></span></h3>
+                <ul id="sick-list"></ul>
+            </div>
         </div>
     </div>
+
     <dialog id="gcal-dialog">
         <h3 id="dlg-date"></h3>
-        <input type="text" id="dlg-title" placeholder="일정 제목">
+        <input type="text" id="dlg-title" placeholder="일정 제목 (휴일·연차·병가는 비워도 돼요)">
         <select id="dlg-type">
             <option value="normal">일반 일정</option>
             <option value="holiday">휴일</option>
+            <option value="annual">연차</option>
+            <option value="sick">병가</option>
         </select>
         <label>일수 <input type="number" id="dlg-days" value="1" min="1" max="31"></label>
         <div class="dlg-buttons">
@@ -41,15 +63,11 @@
             <button type="button" id="dlg-cancel">취소</button>
         </div>
     </dialog>
-    <div class="holiday-box">
-        <h3>사용한 휴일 <span id="holiday-count"></span></h3>
-        <ul id="holiday-list"></ul>
-    </div>
 
     <div class="gcal-footer">
         <button id="gcal-login">구글 로그인</button>
+        <p class="gcal-note">보기는 로그인 없이 되고, 추가·삭제만 로그인이 필요해요</p>
     </div>
-</div>
 </div>
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>

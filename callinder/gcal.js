@@ -1,55 +1,126 @@
 (function () {
   const CLIENT_ID = '833093832712-kahs812ro4jcv9o0oh67qnmn24usu7oa.apps.googleusercontent.com';
+  const API_KEY = '여기에_새_API_키';
+  const CAL_ID = 'wooo52735273@gmail.com';
   const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
-  const API = 'https://www.googleapis.com/calendar/v3/calendars/primary/events';
+  const BASE = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CAL_ID)}/events`;
+
+  // 불러올 기간
+  const RANGE_START = '2026-01-01';
+  const RANGE_END = '2029-01-01';
+
+  // 연차: 기준일 9월 10일, 1년차 15개 / 2년차 13개
+  const ANNUAL = [
+    { start: '2026-09-10', end: '2027-09-09', total: 15 },
+    { start: '2027-09-10', end: '2028-05-19', total: 13 },
+  ];
+  // 병가: 전역일까지 총 30개
+  const SICK = { total: 30, end: '2028-05-19' };
+
+  const TAG = { holiday: '휴일', annual: '연차', sick: '병가' };
+  const TAG_TO_TYPE = { 휴일: 'holiday', 연차: 'annual', 병가: 'sick' };
 
   let accessToken = null;
   let tokenClient = null;
+  let events = [];   // [{ id, date, days, title, type }]
+  let dayMap = {};   // 'YYYY-MM-DD' -> [{ id, title, type, n, days }]
+  let loadError = null;
 
-  // 'YYYY-MM-DD'에 n일 더하기
-  const addDays = (dateStr, n) => {
-    const d = new Date(dateStr);
+  const pad = (n) => String(n).padStart(2, '0');
+
+  const addDays = (s, n) => {
+    const d = new Date(s);
     d.setUTCDate(d.getUTCDate() + n);
     return d.toISOString().slice(0, 10);
   };
+  const diffDays = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000);
 
+  // 제목 <-> 종류
+  function parseTitle(summary) {
+    const m = /^\[(휴일|연차|병가)\]\s*(.*)$/.exec(summary || '');
+    if (!m) return { type: 'normal', title: summary || '(제목 없음)' };
+    return { type: TAG_TO_TYPE[m[1]], title: m[2] || m[1] };
+  }
+  function buildTitle(type, title) {
+    if (type === 'normal') return title;
+    return `[${TAG[type]}]` + (title ? ' ' + title : '');
+  }
+
+  function rebuild() {
+    dayMap = {};
+    events.forEach((e) => {
+      for (let n = 0; n < e.days; n++) {
+        const k = addDays(e.date, n);
+        (dayMap[k] ||= []).push({ id: e.id, title: e.title, type: e.type, n, days: e.days });
+      }
+    });
+  }
+
+  // ===== 읽기: 로그인 없이 API 키로 =====
+  async function loadEvents() {
+    const params = new URLSearchParams({
+      key: API_KEY,
+      timeMin: new Date(RANGE_START + 'T00:00:00').toISOString(),
+      timeMax: new Date(RANGE_END + 'T00:00:00').toISOString(),
+      singleEvents: 'true',
+      orderBy: 'startTime',
+      maxResults: '2500',
+    });
+    try {
+      const res = await fetch(`${BASE}?${params}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error?.message || res.status);
+
+      events = data.items
+        .filter((e) => e.status !== 'cancelled' && e.start)
+        .map((e) => {
+          const date = (e.start.date || e.start.dateTime).slice(0, 10);
+          let days = 1;
+          if (e.start.date && e.end?.date) days = Math.max(1, diffDays(e.start.date, e.end.date));
+          const p = parseTitle(e.summary);
+          return { id: e.id, date, days, title: p.title, type: p.type };
+        });
+      loadError = null;
+    } catch (err) {
+      console.error(err);
+      events = [];
+      loadError = String(err.message || err);
+    }
+    rebuild();
+    renderLists();
+    document.dispatchEvent(new Event('gcal-data'));
+  }
+
+  // ===== 쓰기: 로그인 필요 =====
   function login() {
     if (!tokenClient) {
       tokenClient = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
         scope: SCOPES,
-        callback: async (resp) => {
+        callback: (resp) => {
           if (resp.error) { console.error(resp); return; }
           accessToken = resp.access_token;
           document.getElementById('gcal-login').textContent = '로그인됨';
-          await refreshHolidays();
-          document.dispatchEvent(new Event('gcal-login'));
         },
       });
     }
     tokenClient.requestAccessToken({ prompt: 'consent' });
   }
 
-  // type: 'normal' | 'holiday', days: 일수
   async function addEvent(title, date, type = 'normal', days = 1) {
     if (!accessToken) { alert('먼저 구글 로그인을 하세요'); return null; }
 
-    const body = {
-      summary: title,
-      start: { date: date },
-      end: { date: addDays(date, days) },
-    };
-    if (type === 'holiday') {
-      body.extendedProperties = { private: { gcalType: 'holiday' } };
-    }
-
-    const res = await fetch(API, {
+    const res = await fetch(BASE, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify({
+        summary: buildTitle(type, title),
+        start: { date },
+        end: { date: addDays(date, days) },
+      }),
     });
     const data = await res.json();
     if (!res.ok) {
@@ -60,44 +131,10 @@
     return data;
   }
 
-  async function listEvents(startDate, endDate, onlyHoliday = false) {
-    if (!accessToken) return [];
-
-    const params = new URLSearchParams({
-      timeMin: new Date(startDate + 'T00:00:00').toISOString(),
-      timeMax: new Date(endDate + 'T00:00:00').toISOString(),
-      singleEvents: 'true',
-      orderBy: 'startTime',
-      maxResults: '250',
-    });
-    if (onlyHoliday) params.set('privateExtendedProperty', 'gcalType=holiday');
-
-    const res = await fetch(`${API}?${params}`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-    const data = await res.json();
-    if (!res.ok) { console.error(data); return []; }
-
-    return data.items.map((e) => {
-      const start = (e.start.date || e.start.dateTime).slice(0, 10);
-      let days = 1;
-      if (e.start.date && e.end?.date) {
-        days = Math.max(1, Math.round((new Date(e.end.date) - new Date(e.start.date)) / 86400000));
-      }
-      return {
-        id: e.id,
-        date: start,
-        days,
-        title: e.summary || '(제목 없음)',
-        type: e.extendedProperties?.private?.gcalType === 'holiday' ? 'holiday' : 'normal',
-      };
-    });
-  }
-
   async function deleteEvent(eventId) {
     if (!accessToken) { alert('먼저 구글 로그인을 하세요'); return false; }
 
-    const res = await fetch(`${API}/${eventId}`, {
+    const res = await fetch(`${BASE}/${eventId}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${accessToken}` },
     });
@@ -110,39 +147,75 @@
     return true;
   }
 
-  // 사용한 휴일 목록 (올해 ~ 내년)
-  async function refreshHolidays() {
-    const y = new Date().getFullYear();
-    const items = await listEvents(`${y}-01-01`, `${y + 2}-01-01`, true);
+  // ===== 사용 일수 / 남은 개수 계산 =====
+  function usedDays(type, from, to) {
+    const set = new Set();
+    Object.keys(dayMap).forEach((k) => {
+      if (k >= from && k <= to && dayMap[k].some((x) => x.type === type)) set.add(k);
+    });
+    return set.size;
+  }
 
-    const total = items.reduce((sum, ev) => sum + ev.days, 0);
-    const ul = document.getElementById('holiday-list');
-    ul.innerHTML = '';
-    document.getElementById('holiday-count').textContent = `(총 ${total}일)`;
+  // y: 연도, m: 월(0~11)
+  function stats(y, m) {
+    const first = `${y}-${pad(m + 1)}-01`;
+    const last = `${y}-${pad(m + 1)}-${pad(new Date(y, m + 1, 0).getDate())}`;
+    const mid = `${y}-${pad(m + 1)}-15`;
 
-    items.forEach((ev) => {
-      const li = document.createElement('li');
-      const range = ev.days > 1
-        ? `${ev.date} ~ ${addDays(ev.date, ev.days - 1)} (${ev.days}일)`
-        : ev.date;
-      li.textContent = `${range}  ${ev.title}  `;
+    let period = ANNUAL.find((p) => mid >= p.start && mid <= p.end);
+    if (!period) period = mid < ANNUAL[0].start ? ANNUAL[0] : ANNUAL[ANNUAL.length - 1];
 
-      const btn = document.createElement('button');
-      btn.textContent = '삭제';
-      btn.addEventListener('click', async () => {
-        if (!confirm(`"${ev.title}" 휴일을 삭제할까요?`)) return;
-        if (await deleteEvent(ev.id)) {
-          await refreshHolidays();
-          document.dispatchEvent(new Event('gcal-changed'));
-        }
+    return {
+      holidayUsed: usedDays('holiday', first, last),
+      annual: { ...period, used: usedDays('annual', period.start, period.end) },
+      sick: { total: SICK.total, used: usedDays('sick', RANGE_START, SICK.end) },
+    };
+  }
+
+  // ===== 사용한 휴일 / 연차 / 병가 목록 =====
+  function renderLists() {
+    [
+      ['holiday', 'holiday-list', 'holiday-count'],
+      ['annual', 'annual-list', 'annual-count'],
+      ['sick', 'sick-list', 'sick-count'],
+    ].forEach(([type, ulId, cntId]) => {
+      const list = events.filter((e) => e.type === type);
+      const total = list.reduce((s, e) => s + e.days, 0);
+      const ul = document.getElementById(ulId);
+      ul.innerHTML = '';
+      document.getElementById(cntId).textContent = `(총 ${total}일)`;
+
+      list.forEach((ev) => {
+        const li = document.createElement('li');
+        const range = ev.days > 1
+          ? `${ev.date} ~ ${addDays(ev.date, ev.days - 1)} (${ev.days}일)`
+          : ev.date;
+        li.textContent = `${range}  ${ev.title}  `;
+
+        const btn = document.createElement('button');
+        btn.textContent = '삭제';
+        btn.addEventListener('click', async () => {
+          if (!confirm(`"${ev.title}" 일정을 삭제할까요?`)) return;
+          if (await deleteEvent(ev.id)) await loadEvents();
+        });
+
+        li.appendChild(btn);
+        ul.appendChild(li);
       });
-
-      li.appendChild(btn);
-      ul.appendChild(li);
     });
   }
 
   document.getElementById('gcal-login').addEventListener('click', login);
 
-  window.gcal = { addEvent, listEvents, deleteEvent, refreshHolidays, addDays };
+  window.gcal = {
+    addEvent,
+    deleteEvent,
+    reload: loadEvents,
+    getDay: (k) => dayMap[k] || [],
+    stats,
+    isLoggedIn: () => !!accessToken,
+    getError: () => loadError,
+  };
+
+  loadEvents();
 })();
