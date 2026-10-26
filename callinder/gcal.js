@@ -7,19 +7,10 @@
   const API_KEY = "AIzaSyAq8yWBFEryjyoWAtqYtzY4Dj82w5w8uww";
   const CAL_ID = "wooo52735273@gmail.com";
 
-  const SCOPES =
-    "https://www.googleapis.com/auth/calendar.events";
+  const SCOPES = "https://www.googleapis.com/auth/calendar.events";
 
   const API_BASE =
     `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CAL_ID)}/events`;
-
-  let accessToken = "";
-  let events = [];
-  let loadError = "";
-  let viewYear = 2026;
-  let viewMonth = 9;
-  let requestId = 0;
-  let expandedCache = null;
 
   // 연차·병가 합산을 위해 한 번에 불러올 전체 기간
   const RANGE_START = "2026-01-01";
@@ -34,6 +25,15 @@
   // 병가: 전역일까지 총 30개
   const SICK_TOTAL = 30;
   const SICK_END = "2028-05-19";
+
+  let accessToken = "";
+  let events = [];
+  let loadError = "";
+  let viewYear = 2026;
+  let viewMonth = 9;
+  let requestId = 0;
+  let expandedCache = null;
+  let dayIndex = null;
 
   const typeToTag = {
     holiday: "휴일",
@@ -91,10 +91,11 @@
     return eventStart(event);
   }
 
-  // 여러 날에 걸친 일정을 날짜별로 전개
-    function expandedEvents() {
-        if (expandedCache) return expandedCache;
-        const result = [];
+  // 여러 날에 걸친 일정을 날짜별로 전개 (결과는 저장해서 재사용)
+  function expandedEvents() {
+    if (expandedCache) return expandedCache;
+
+    const result = [];
 
     for (const event of events) {
       const start = eventStart(event);
@@ -128,12 +129,20 @@
         });
       }
     }
+
     expandedCache = result;
     return result;
   }
 
+  // 날짜별로 한 번만 묶어두고 꺼내 쓰기
   function getDay(key) {
-    return expandedEvents().filter(event => event.key === key);
+    if (!dayIndex) {
+      dayIndex = {};
+      for (const event of expandedEvents()) {
+        (dayIndex[event.key] ||= []).push(event);
+      }
+    }
+    return dayIndex[key] || [];
   }
 
   function setStatus(message) {
@@ -141,11 +150,8 @@
     if (el) el.textContent = message;
   }
 
-  // 현재 표시 중인 달의 일정 불러오기
-  
-  // 현재 표시 중인 달의 일정을 불러온다.
-  // 공개 일정은 로그인 없이 조회하고,
-  // 로그인되어 있으면 인증 토큰을 함께 보낸다.
+  // 전체 기간 일정을 한 번에 불러온다.
+  // 공개 일정은 로그인 없이 조회하고, 로그인되어 있으면 토큰도 함께 보낸다.
   async function loadEvents() {
     const myId = ++requestId; // 가장 최근 요청만 화면에 반영
 
@@ -159,7 +165,8 @@
         orderBy: "startTime",
         timeMin: startDate.toISOString(),
         timeMax: endDate.toISOString(),
-        maxResults: "2500"
+        maxResults: "2500",
+        fields: "items(id,summary,start,end)"
       });
 
       const url = `${API_BASE}?${params}`;
@@ -195,6 +202,7 @@
 
       events = data.items || [];
       expandedCache = null;
+      dayIndex = null;
       loadError = "";
 
       setStatus(
@@ -213,7 +221,6 @@
       }
     }
   }
-
 
   function login() {
     if (!CLIENT_ID || CLIENT_ID.startsWith("YOUR_")) {
@@ -339,7 +346,7 @@
     await loadEvents();
   }
 
-   // 보고 있는 달이 속한 연차 기간 (없으면 null)
+  // 보고 있는 달이 속한 연차 기간 (없으면 null)
   function annualPeriod(year, month) {
     const mid = `${year}-${String(month + 1).padStart(2, "0")}-15`;
     return ANNUAL_PERIODS.find(p => mid >= p.start && mid <= p.end) || null;
@@ -360,9 +367,8 @@
       if (event.type === "holiday" && event.key.startsWith(prefix)) {
         used.holiday.add(event.key);
       }
-
       // 연차: 해당 연차 기간 전체
-      if (
+      else if (
         event.type === "annual" &&
         period &&
         event.key >= period.start &&
@@ -370,9 +376,8 @@
       ) {
         used.annual.add(event.key);
       }
-
       // 병가: 전역일까지 전체
-      if (event.type === "sick" && event.key <= SICK_END) {
+      else if (event.type === "sick" && event.key <= SICK_END) {
         used.sick.add(event.key);
       }
     }
@@ -385,37 +390,6 @@
       },
       sick: {
         total: SICK_TOTAL,
-        used: used.sick.size
-      }
-    };
-  }
-
-  function stats(year, month) {
-    const first = new Date(year, month, 1);
-    const last = new Date(year, month + 1, 0);
-
-    const used = {
-      holiday: new Set(),
-      annual: new Set(),
-      sick: new Set()
-    };
-
-    for (const event of expandedEvents()) {
-      const d = new Date(`${event.key}T12:00:00`);
-
-      if (d >= first && d <= last && used[event.type]) {
-        used[event.type].add(event.key);
-      }
-    }
-
-    return {
-      holidayUsed: used.holiday.size,
-      annual: {
-        total: annualTotal(year, month),
-        used: used.annual.size
-      },
-      sick: {
-        total: 30,
         used: used.sick.size
       }
     };
@@ -434,14 +408,11 @@
       if (list) list.innerHTML = "";
     });
 
-    const first = new Date(viewYear, viewMonth, 1);
-    const last = new Date(viewYear, viewMonth + 1, 0);
+    const prefix = `${viewYear}-${String(viewMonth + 1).padStart(2, "0")}`;
     const seen = new Set();
 
     for (const event of expandedEvents()) {
-      const d = new Date(`${event.key}T12:00:00`);
-
-      if (d < first || d > last) continue;
+      if (!event.key.startsWith(prefix)) continue;
 
       const unique = `${event.id}-${event.key}`;
       if (seen.has(unique)) continue;
@@ -493,18 +464,19 @@
     isLoggedIn: () => !!accessToken,
     getError: () => loadError,
 
+    // 전체 기간을 이미 불러왔으므로 달을 넘길 때 다시 요청하지 않음
     setView: (year, month) => {
       viewYear = year;
       viewMonth = month;
-
-      // 전체 기간을 이미 불러왔으므로 달을 넘길 때 다시 요청하지 않음
       renderLists();
     },
+
+    renderLists
   };
 
-    document
-        .querySelector("#gcal-login")
-        ?.addEventListener("click", login);
+  document
+    .querySelector("#gcal-login")
+    ?.addEventListener("click", login);
 
   // 페이지가 열리면 로그인 없이 공개 일정부터 불러오기
   loadEvents();
